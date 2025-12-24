@@ -173,7 +173,4 @@ genai-assignment/                # project root
 - Implement observability: metrics (Prometheus), traces (OpenTelemetry), and alerts.
 
 ## Contact / Contribution
-
 - Author: yairlavy
-- Contributions: fork the repository and open a pull request for review.
-- Before contributing, ensure secrets are not committed and add tests for any behavior changes.
