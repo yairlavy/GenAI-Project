@@ -1,18 +1,19 @@
-GenAI Developer Assessment: Intelligent Form Extraction & Medical Chatbot
-
+**GenAI Developer Assessment: Intelligent Form Extraction & Medical Chatbot
+**
 Project Overview
 
 This project is a comprehensive Generative AI solution designed to automate administrative tasks and provide intelligent medical assistance. It leverages Azure OpenAI (GPT-4o & Ada-002) and Azure Document Intelligence to solve two distinct real-world challenges:
 
-Phase 1: Intelligent Form Extraction
-
+**Intelligent Form Extraction
+**
 An automated pipeline that converts complex National Insurance (Bituach Leumi) PDF forms—containing handwriting and checkboxes—into structured, validated JSON data.
 
-Phase 2: Medical Services Chatbot
-
+**Medical Services Chatbot
+**
 A secure, stateless RAG (Retrieval-Augmented Generation) chatbot that answers questions about Israeli Health Funds. It uses vector search to retrieve accurate information and avoids hallucinations.
 
-Prerequisites
+**Prerequisites
+**
 Before running the project, ensure you have the following installed:
 Python 3.10 or higher
 Git (optional, for cloning the repository)
@@ -35,21 +36,19 @@ python -m venv .venv
 # Mac / Linux
 source .venv/bin/activate
 
-
-2. Install Dependencies
+Install Dependencies
 Install all required Python libraries using the requirements file:
 
 bash
-
 pip install -r requirements.txt
-3. Configure Environment Variables
+
+Configure Environment Variables
 Create a .env file in the project root and add your Azure credentials:
 
 AZURE_OPENAI_ENDPOINT="your_openai_endpoint"
 AZURE_OPENAI_KEY="your_openai_key"
 AZURE_DI_ENDPOINT="your_document_intelligence_endpoint"
 AZURE_DI_KEY="your_document_intelligence_key"
-
 
 How to Run the System
 
