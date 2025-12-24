@@ -1,40 +1,44 @@
 import os
 import json
+import re
 from dotenv import load_dotenv
-
 from openai import AzureOpenAI
 from phase1.schemas import InjuryFormModel
 
-
-# Load environment variables from the .env file
-# This allows us to access the Azure OpenAI endpoint and key
+# Load environment variables
 load_dotenv()
 
 AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
 
 if not AZURE_OPENAI_ENDPOINT or not AZURE_OPENAI_KEY:
-    raise RuntimeError("Missing AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_KEY")
+    raise RuntimeError("Missing Azure OpenAI credentials")
 
-
-# Create a client that can communicate with Azure OpenAI
-# This client will be reused every time we want to call GPT
 client = AzureOpenAI(
     api_key=AZURE_OPENAI_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
     api_version="2024-02-15-preview"
 )
 
+def clean_json_string(text: str) -> str:
+    """
+    Helper function to strip Markdown code blocks (```json ... ```)
+    from the LLM response so json.loads doesn't crash.
+    """
+    # Remove ```json wrapper if it exists
+    if "```json" in text:
+        text = text.split("```json")[1].split("```")[0]
+    # Remove generic ``` wrapper if it exists
+    elif "```" in text:
+        text = text.split("```")[1].split("```")[0]
+    
+    return text.strip()
 
 def extract_fields_with_llm(ocr_text: str) -> dict:
     """
-    Receives raw OCR text extracted from a document.
-    Sends the text to GPT with very strict instructions.
-    Returns a Python dictionary that matches InjuryFormModel.
+    Receives raw OCR text, sends it to GPT-4o, and returns a clean dictionary.
     """
-
-    # We explicitly describe the task to the model.
-    # The model is not allowed to guess or add information.
+    
     system_prompt = (
         "You are an information extraction engine.\n"
         "Your task is to extract structured data from OCR text of a National Insurance form.\n"
@@ -43,8 +47,10 @@ def extract_fields_with_llm(ocr_text: str) -> dict:
         "Return only valid JSON. Do not include explanations or extra text."
     )
 
-    # We provide the OCR text and clearly describe the expected output structure.
-    # The JSON structure must match the InjuryFormModel exactly.
+    # Convert the Pydantic model to a JSON schema example
+    # so the LLM knows exactly what format to output.
+    json_structure = json.dumps(InjuryFormModel().model_dump(), ensure_ascii=False, indent=2)
+
     user_prompt = f"""
 Extract the following OCR text into the exact JSON structure below.
 
@@ -54,12 +60,13 @@ OCR TEXT:
 \"\"\"
 
 JSON STRUCTURE:
-{json.dumps(InjuryFormModel().model_dump(), ensure_ascii=False, indent=2)}
+{json_structure}
 
 Rules:
 - Return ONLY JSON
 - Keep all keys exactly as shown
 - Use empty strings ("") for missing values
+- Treat '[X]' as a selected checkbox (True/Yes)
 """
 
     response = client.chat.completions.create(
@@ -73,28 +80,28 @@ Rules:
 
     raw_content = response.choices[0].message.content
 
-    # The model should return JSON only, but we still parse it safely
+    # FIX: Clean the response before parsing
+    cleaned_content = clean_json_string(raw_content)
+
     try:
-        extracted_data = json.loads(raw_content)
+        extracted_data = json.loads(cleaned_content)
     except json.JSONDecodeError as e:
+        print(f"FAILED TO PARSE JSON. Raw content:\n{raw_content}")
         raise ValueError("LLM response is not valid JSON") from e
 
     return extracted_data
 
-
 if __name__ == "__main__":
-    # This is a manual test to verify that the LLM extraction works.
-    # It uses OCR output text saved from a previous OCR run.
-
+    # Test block
     sample_text = """
     שם משפחה טננהוים
     שם פרטי יהודה
     ת.ז. 877524563
     מין זכר
-    תאריך לידה 02.02.1995
     """
-
-    extracted = extract_fields_with_llm(sample_text)
-
-    print("Extracted JSON:")
-    print(json.dumps(extracted, ensure_ascii=False, indent=2))
+    try:
+        extracted = extract_fields_with_llm(sample_text)
+        print("Extracted JSON:")
+        print(json.dumps(extracted, ensure_ascii=False, indent=2))
+    except Exception as e:
+        print(f"Error: {e}")

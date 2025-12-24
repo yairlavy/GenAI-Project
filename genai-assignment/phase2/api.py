@@ -83,7 +83,7 @@ def chat(request: ChatRequest):
     logger.info(f"Incoming request | User ID: {user_profile.id_number or 'Unknown'} | Phase: { 'QA' if is_profile_complete(user_profile) else 'Collection' }")
 
     try:
-        # --- Phase 1: Collect User Info ---
+        #  Phase 1: Collect User Info 
         if not is_profile_complete(user_profile):
             system_prompt = user_information_collection_prompt(request.language)
 
@@ -116,7 +116,7 @@ def chat(request: ChatRequest):
                 next_phase=next_phase
             )
 
-        # --- Phase 2: Q&A with RAG ---
+        #  Phase 2: Q&A with RAG
         
         # Search for relevant information based on user message
         relevant_context = search_knowledge(request.message)

@@ -4,48 +4,37 @@ from typing import List, Optional, Literal
 
 class UserProfile(BaseModel):
     """
-    Holds all user-specific information collected during the
-    information collection phase.
+    Holds user info.
+    We use simple 'str' types instead of 'Literal' to support both 
+    Hebrew and English values (e.g., "Gold" vs "זהב", "Maccabi" vs "מכבי").
     """
-
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     id_number: Optional[str] = None
-
-    gender: Optional[Literal["male", "female"]] = None
+    gender: Optional[str] = None       # Can be "Male", "Female", "זכר", "נקבה"
     age: Optional[int] = None
-
-    hmo: Optional[Literal["מכבי", "מאוחדת", "כללית"]] = None
+    hmo: Optional[str] = None          # Can be "Maccabi", "Clalit", "מכבי", etc.
     hmo_card_number: Optional[str] = None
-    insurance_tier: Optional[Literal["זהב", "כסף", "ארד"]] = None
+    insurance_tier: Optional[str] = None # Can be "Gold", "Platinum", "זהב"...
 
 
 class ChatMessage(BaseModel):
-    """
-    Represents a single message in the conversation history
-    with a specific role.
-    """
-    role: Literal["user", "assistant", "system"]
+    role: str  # user, assistant, system
     content: str
 
 
 class ChatRequest(BaseModel):
     """
-    Represents a single chat request sent from the client to the API.
+    Represents the request sent from Streamlit to FastAPI.
+    Includes the 'language' field we added.
     """
-
     message: str
-    language: Literal["he", "en"]
-    user_profile: UserProfile
-
-    # Updated to accept structured messages with roles
-    conversation_history: List[ChatMessage]
+    conversation_history: List[ChatMessage] = []
+    user_profile: UserProfile = UserProfile()
+    language: str = "he"  # Default to Hebrew if missing
 
 
 class ChatResponse(BaseModel):
-    """
-    Represents the response returned to the client.
-    """
     reply: str
     updated_user_profile: UserProfile
-    next_phase: Literal["collecting_info", "qa"]
+    next_phase: str  # "collecting_info" or "qa"
