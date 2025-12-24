@@ -74,7 +74,7 @@ def validate_extraction(extracted: Dict[str, Any]) -> Dict[str, Any]:
         "missing_fields": []
     }
 
-    # 1) Schema validation (structure)
+    # Schema validation (structure)
     # If the dict cannot fit the model structure, this is a hard error.
     try:
         model = InjuryFormModel.model_validate(extracted)
@@ -84,7 +84,7 @@ def validate_extraction(extracted: Dict[str, Any]) -> Dict[str, Any]:
         report["errors"].append(f"Schema validation failed: {str(e)}")
         return report
 
-    # 2) Completeness calculation (how many leaf fields are filled)
+    # Completeness calculation (how many leaf fields are filled)
     flat = _flatten_fields(data)
     total_fields = len(flat)
     filled_fields = sum(0 if _is_empty(v) else 1 for _, v in flat)
@@ -95,10 +95,10 @@ def validate_extraction(extracted: Dict[str, Any]) -> Dict[str, Any]:
         if _is_empty(value):
             report["missing_fields"].append(path)
 
-    # 3) Basic field checks (examples that match the spec)
+    # Basic field checks 
     # We do not correct; we only warn/error.
 
-    # ID number: should be 9 digits (requirement in Part 2, but still useful here)
+    # ID number: should be 9 digits if present
     id_number = (data.get("idNumber") or "").strip()
     if id_number:
         if not re.fullmatch(r"\d+", id_number):
@@ -111,7 +111,7 @@ def validate_extraction(extracted: Dict[str, Any]) -> Dict[str, Any]:
     if gender and gender not in ["זכר", "נקבה", "male", "female", "M", "F"]:
         report["warnings"].append(f"gender value looks unusual: '{gender}'")
 
-    # Phone numbers: digit-only check (light warning)
+    # Phone numbers: digit-only check
     mobile = (data.get("mobilePhone") or "").strip()
     if mobile and not re.fullmatch(r"\d{7,15}", mobile):
         report["warnings"].append("mobilePhone format looks unusual (expected 7-15 digits)")
@@ -126,7 +126,7 @@ def validate_extraction(extracted: Dict[str, Any]) -> Dict[str, Any]:
     report["warnings"].extend(_validate_date(data.get("formFillingDate", {}), "formFillingDate"))
     report["warnings"].extend(_validate_date(data.get("formReceiptDateAtClinic", {}), "formReceiptDateAtClinic"))
 
-    # 4) Decide is_valid
+    # Decide is_valid
     # Hard errors would be in report["errors"].
     # Warnings do not fail the run.
     if report["errors"]:

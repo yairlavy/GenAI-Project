@@ -11,7 +11,7 @@ from phase2.prompts import (
 from phase2.knowledge_loader import load_knowledge
 from phase2.llm_client import call_llm, get_embedding
 from phase2.extraction import extract_user_info
-from phase2.logger import logger  # Import our new logger
+from phase2.logger import logger  # Import the logger
 
 
 app = FastAPI(
@@ -65,7 +65,7 @@ def search_knowledge(query: str, top_k: int = 3) -> str:
         score = cosine_similarity(query_vector, item["embedding"])
         scored_chunks.append((score, item["text"]))
     
-    #Sort by score (descending)
+    #Sort by score descending
     scored_chunks.sort(key=lambda x: x[0], reverse=True)
     
     #Take top K chunks
@@ -83,7 +83,7 @@ def chat(request: ChatRequest):
     logger.info(f"Incoming request | User ID: {user_profile.id_number or 'Unknown'} | Phase: { 'QA' if is_profile_complete(user_profile) else 'Collection' }")
 
     try:
-        #  Phase 1: Collect User Info 
+        #Collect User Info
         if not is_profile_complete(user_profile):
             system_prompt = user_information_collection_prompt(request.language)
 
@@ -116,7 +116,7 @@ def chat(request: ChatRequest):
                 next_phase=next_phase
             )
 
-        #  Phase 2: Q&A with RAG
+        #Q&A with RAG
         
         # Search for relevant information based on user message
         relevant_context = search_knowledge(request.message)
@@ -162,13 +162,17 @@ def chat(request: ChatRequest):
             updated_user_profile=user_profile,
             next_phase="collecting_info" if not is_profile_complete(user_profile) else "qa"
         )
-
 @app.get("/logs")
-def get_logs():
+def get_logs(access: str = None):
     """
-    Returns the last 50 lines of the log file.
-    Useful for demonstrating backend logic in the UI.
+    Returns logs ONLY if the correct access key is provided in the URL.
+    Usage: /logs?access=admin
     """
+    # Validate the access token. In a production environment, use environment variables for secrets.
+    if access != "admin":
+        return {"logs": ["Logs Not Available (Access Denied)."]}
+    
+    # If access is granted, proceed to read the log file
     log_file_path = Path(__file__).parent / ".." / "logs" / "chatbot.log"
     
     if not log_file_path.exists():

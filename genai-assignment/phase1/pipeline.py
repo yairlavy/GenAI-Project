@@ -34,8 +34,8 @@ if __name__ == "__main__":
 
     result = process_file(str(pdf_path))
 
-    print("----- FINAL EXTRACTED JSON -----")
+    print("FINAL EXTRACTED JSON")
     print(json.dumps(result["extracted_data"], ensure_ascii=False, indent=2))
 
-    print("----- VALIDATION REPORT -----")
+    print("VALIDATION REPORT")
     print(json.dumps(result["validation"], ensure_ascii=False, indent=2))

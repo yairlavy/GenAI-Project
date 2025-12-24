@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 
-# --- 1. UI & Styling Helper Functions ---
+#UI & Styling Helper Functions 
 
 def apply_base_styling():
     """
@@ -95,7 +95,6 @@ def apply_dynamic_styling(direction):
         unsafe_allow_html=True
     )
 
-
 def display_sidebar():
     """
     Renders the Language Selector and Developer Logs in the sidebar.
@@ -103,7 +102,7 @@ def display_sidebar():
     """
     st.sidebar.title("Settings / הגדרות")
     
-    #  Language Selector 
+    # Language Selector 
     lang_choice = st.sidebar.radio(
         "Language / שפה:",
         options=["עברית HE", "English EN"],
@@ -114,12 +113,20 @@ def display_sidebar():
     
     st.sidebar.markdown("---")
     
-    #  Developer Logs 
+    # Developer Logs 
     st.sidebar.title("Developer Logs")
     st.sidebar.caption("Live backend activity stream")
     
+    # Retrieve access token from Streamlit URL query params
+    # Usage: http://localhost:8501/?access=admin
+    query_params = st.query_params
+    access_token = query_params.get("access", None)
+    
     try:
-        log_response = requests.get(LOGS_URL)
+        # Pass the access token to the backend API
+        params = {"access": access_token} if access_token else {}
+        log_response = requests.get(LOGS_URL, params=params)
+        
         if log_response.status_code == 200:
             logs = log_response.json().get("logs", [])
             if logs:
