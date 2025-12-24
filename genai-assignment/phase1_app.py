@@ -92,7 +92,7 @@ st.markdown(
 st.markdown(
     """
     <div style='text-align: center; color: #4b5563; margin-bottom: 20px;'>
-    Upload a filled National Insurance (ביטוח לאומי) form in PDF format.<br>
+    Upload a filled National Insurance (ביטוח לאומי) form in PDF/JPG format.<br>
     The system extracts structured information using OCR and Azure OpenAI
     and returns the data in a standardized JSON format.
     </div>
@@ -104,10 +104,10 @@ st.markdown("<hr>", unsafe_allow_html=True)
 
 
 # File uploader component.
-# Only PDF files are allowed, as required by the assignment.
+# Only PDF and JPG files are allowed, as required by the assignment.
 uploaded_file = st.file_uploader(
-    "Upload PDF file",
-    type=["pdf"]
+    "Upload PDF/JPG file",
+    type=["pdf", "jpg"]
 )
 
 
