@@ -9,8 +9,10 @@ This project presents an End-to-End solution based on Azure OpenAI and Azure Doc
 ## Setup & Installation
 
 ### 1. Prerequisites
-* Python 3.10 or higher.
-* Access keys for Azure OpenAI and Azure Document Intelligence.
+
+* **Python 3.10** or higher.
+* **Git** (optional, for cloning the repository).
+* **Azure Credentials**: You need the Endpoint and API Keys for both *Azure OpenAI* and *Azure Document Intelligence*.
 
 ### 2. Environment Setup
 Open a terminal in the root directory and run:
@@ -30,8 +32,11 @@ pip install -r requirements.txt
 Create a file named .env in the root directory and add your keys:
 
 AZURE_OPENAI_ENDPOINT="your_endpoint"
+
 AZURE_OPENAI_KEY="your_key"
+
 AZURE_DI_ENDPOINT="your_ocr_endpoint"
+
 AZURE_DI_KEY="your_ocr_key"
 
 ### How to Run
@@ -53,4 +58,24 @@ streamlit run phase1_app.py
 Terminal 3: Chatbot UI (Phase 2)
 ```bash
 streamlit run phase2_app.py
+```
+### Project Structure
+
+```bash
+genai-assignment/
+├── phase1/                 # Logic for Form Extraction
+│   ├── ocr.py              # Smart OCR implementation
+│   ├── llm_extractor.py    # GPT-4o extraction logic
+│   └── validator.py        # Pydantic validation rules
+├── phase2/                 # Logic for Chatbot Microservice
+│   ├── api.py              # FastAPI Backend Entry Point
+│   ├── knowledge_loader.py # RAG & Vector Store logic
+│   ├── llm_client.py       # Azure OpenAI wrapper (Chat & Embeddings)
+│   ├── logger.py           # Centralized logging system
+│   └── prompts.py          # System prompts storage
+├── UI/                     # Assets (Background images)
+├── phase1_app.py           # Streamlit Frontend for Phase 1
+├── phase2_app.py           # Streamlit Frontend for Phase 2
+├── Launcher.bat            # Auto-start script
+└── requirements.txt        # Python dependencies
 ```
