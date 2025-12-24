@@ -1,8 +1,10 @@
 # GenAI Project: Intelligent Form Extraction & Medical Chatbot
 
 This project presents an End-to-End solution based on Azure OpenAI and Azure Document Intelligence. The system is divided into two main parts:
-1. **Phase 1:** An automated system for extracting structured data from National Insurance forms (handling handwriting and checkboxes).
-2. **Phase 2:** A medical chatbot (RAG) that answers questions about Health Funds, designed as a stateless microservice.
+
+**Phase 1:** An automated system for extracting structured data from National Insurance forms (handling handwriting and checkboxes).
+
+**Phase 2:** A medical chatbot (RAG) that answers questions about Health Funds, designed as a stateless microservice.
 
 ## Setup & Installation
 
@@ -22,6 +24,7 @@ python -m venv .venv
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
 Environment Variables
 Create a file named .env in the root directory and add your keys:
