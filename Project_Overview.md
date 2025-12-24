@@ -26,7 +26,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Environment Variables
+### Environment Variables
 Create a file named .env in the root directory and add your keys:
 
 AZURE_OPENAI_ENDPOINT="your_endpoint"
@@ -34,18 +34,23 @@ AZURE_OPENAI_KEY="your_key"
 AZURE_DI_ENDPOINT="your_ocr_endpoint"
 AZURE_DI_KEY="your_ocr_key"
 
-How to Run
-Option A - Automatic Launch (Recommended for Windows)
+### How to Run
+
+### Option A - Automatic Launch (Recommended for Windows)
 Simply double-click the Launcher.bat file. It will automatically install dependencies and open the server and both user interfaces.
 
-Option B - Manual Launch
+### Option B - Manual Launch
 You need to open 3 separate terminal windows (ensure the virtual environment is activated in all):
 
 Terminal 1: Backend Server (Chatbot Brain)
+```bash
 uvicorn phase2.api:app --reload
-
+```
 Terminal 2: Form Analysis UI (Phase 1)
+```bash
 streamlit run phase1_app.py
-
+```
 Terminal 3: Chatbot UI (Phase 2)
+```bash
 streamlit run phase2_app.py
+```
